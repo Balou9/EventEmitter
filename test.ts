@@ -19,4 +19,17 @@ test(function removeListener () : void {
   assertEquals(myEmitter.listeners, { mikey: [] });
 });
 
+test(function emit () : void {
+  const myEmitter = new EventEmitter();
+  myEmitter.on('mikey', mikeyListener);
+  assertEquals(myEmitter.emit('mikey'), true)
+  assertEquals(myEmitter.emit('psykey'), false)
+})
+
+test(function emitOnce () : void {
+  const myEmitter = new EventEmitter();
+  myEmitter.once('mikey', mikeyListener);
+  assertEquals(myEmitter.emit('mikey'), true);
+  assertEquals(myEmitter.listeners, {mikey: [] });
+})
 runTests();
