@@ -1,32 +1,38 @@
 export class EventEmitter {
-  listeners: object = {};
-  on(event: string, fn: Function) : object {
-    if (!this.listeners[event]) this.listeners[event] = [];
-    this.listeners[event].push(fn);
+  private listeners: Map<string, Function[]> = new Map<string, Function[]>();
+  on(eventName: string, fn: Function): EventEmitter {
+    if (!this.listeners.has(eventName)) {
+      this.listeners.set(eventName, []);
+    }
+    this.listeners.get(eventName).push(fn);
     return this;
   };
-  off(event: string, fn: Function) : object {
-    if (!this.listeners[event]) return this;
-    else
-      for (let i = 0; i < this.listeners[event].length; i++) {
-        if (this.listeners[event][i] === fn) this.listeners[event].splice(i,1);
-          break;
-      }
+  off(eventName: string, fn: Function) : EventEmitter {
+    if (this.listeners.has(eventName)) {
+      const eventListeners: Function[] = this.listeners.get(eventName);
+      eventListeners.splice(eventListeners.indexOf(fn), 1);
+    }
+    return this;
   };
-  once(event: string, fn: Function) : object {
-    if (!this.listeners[event]) this.listeners[event] = [];
+  once(eventName: string, fn: Function) : EventEmitter {
+    if (!this.listeners.has(eventName)) {
+      this.listeners.set(eventName, []);
+    }
     const emitOnce = (...args : any[]) => {
       fn(...args);
-      this.off(event, emitOnce);
-    }
-    this.listeners[event].push(emitOnce);
+      this.off(eventName, fn);
+    };
+    this.listeners.get(eventName).push(emitOnce);
     return this
   };
-  emit(event: string, ...args: any[]) : Boolean {
-    if (!this.listeners[event]) return false;
-    this.listeners[event].forEach((f : Function) => {
-      f(...args);
-    });
+  emit(eventName: string, ...args: any[]) : Boolean {
+    if (!this.listeners.has(eventName)) {
+      return false;
+    }
+    this.listeners.get(eventName).forEach((f : Function): void => f(...args));
     return true;
-  }
+  };
+  listenerCount(eventName: string) : number {
+    return this.listeners.get(eventName).length
+  };
 }
