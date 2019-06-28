@@ -1,5 +1,6 @@
 export class EventEmitter {
   private listeners: Map<string, Function[]> = new Map<string, Function[]>();
+
   on(eventName: string, fn: Function): EventEmitter {
     if (!this.listeners.has(eventName)) {
       this.listeners.set(eventName, []);
@@ -7,6 +8,7 @@ export class EventEmitter {
     this.listeners.get(eventName).push(fn);
     return this;
   };
+
   off(eventName: string, fn: Function) : EventEmitter {
     if (this.listeners.has(eventName)) {
       const eventListeners: Function[] = this.listeners.get(eventName);
@@ -14,6 +16,7 @@ export class EventEmitter {
     }
     return this;
   };
+
   once(eventName: string, fn: Function) : EventEmitter {
     if (!this.listeners.has(eventName)) {
       this.listeners.set(eventName, []);
@@ -23,16 +26,21 @@ export class EventEmitter {
       this.off(eventName, fn);
     };
     this.listeners.get(eventName).push(emitOnce);
-    return this
+    return this;
   };
+
   emit(eventName: string, ...args: any[]) : Boolean {
     if (!this.listeners.has(eventName)) {
       return false;
     }
-    this.listeners.get(eventName).forEach((f : Function): void => f(...args));
+    const eventListeners: Function[] = this.listeners.get(eventName).reverse();
+    for (let i = this.listenerCount(eventName); i--;) {
+      eventListeners[i](...args)
+    }
     return true;
   };
+
   listenerCount(eventName: string) : number {
-    return this.listeners.get(eventName).length
+    return this.listeners.get(eventName).length;
   };
 }
