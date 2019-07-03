@@ -9,6 +9,23 @@ function eventListener2 () : void {
   console.log('Another event occured!');
 };
 
-myEmitter.on('eventName2', eventListener1);
-myEmitter.on('eventName2', eventListener2);
-myEmitter.emit('eventName2');
+function eventListener3 () : void {
+  console.log('Third event occured!');
+};
+
+function eventListener4 () : void {
+  console.log('Fourth event occured!');
+};
+
+myEmitter.on('eventName1', eventListener1);
+myEmitter.on('eventName1', eventListener2);
+myEmitter.on('eventName2', eventListener3);
+myEmitter.on('eventName2', eventListener4);
+
+// myEmitter.emit('eventName2');
+// console.log(myEmitter.removeAllListeners('eventName2'))
+console.log(myEmitter)
+console.log(myEmitter.eventNames())
+console.log(myEmitter.removeAllListeners('eventName1'))
+console.log(myEmitter.removeAllListeners())
+// console.log(myEmitter)

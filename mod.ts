@@ -36,11 +36,32 @@ export class EventEmitter {
     const eventListeners: Function[] = this.listeners.get(eventName).reverse();
     for (let i = this.listenerCount(eventName); i--;) {
       eventListeners[i](...args)
-    }
+    };
     return true;
   };
 
   listenerCount(eventName: string) : number {
     return this.listeners.get(eventName).length;
+  };
+  // Type of keyIterator
+  eventNames() : String[] {
+    const eventList : String[] = []
+    const keyIterator = this.listeners.keys()
+    for (let value of keyIterator) {
+      eventList.push(value)
+    }
+    return eventList
+  };
+
+  removeAllListeners(eventName?: string) : EventEmitter {
+   if (eventName) {
+     this.listeners.set(eventName, []);
+   } else {
+     const eventList = this.eventNames();
+     for (let i = 0; i < eventList.length; i++) {
+       this.listeners.set(eventList[i].toString(), [])
+     };
+   }
+   return this
   };
 }
