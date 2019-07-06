@@ -22,10 +22,6 @@ myEmitter.on('eventName1', eventListener2);
 myEmitter.on('eventName2', eventListener3);
 myEmitter.on('eventName2', eventListener4);
 
-// myEmitter.emit('eventName2');
-// console.log(myEmitter.removeAllListeners('eventName2'))
-console.log(myEmitter)
 console.log(myEmitter.eventNames())
 console.log(myEmitter.removeAllListeners('eventName1'))
 console.log(myEmitter.removeAllListeners())
-// console.log(myEmitter)

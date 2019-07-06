@@ -28,6 +28,7 @@ test(function addListener () : void {
   myEmitter.on('eventName', eventListener1);
   myEmitter.on('eventName', eventListener2);
   assertEquals(myEmitter.listenerCount('eventName') == 2, true);
+
 });
 
 test(function removeListener () : void {
@@ -37,6 +38,7 @@ test(function removeListener () : void {
   myEmitter.on('eventName', eventListener2);
   myEmitter.off('eventName', eventListener1);
   assertEquals(myEmitter.listenerCount('eventName'), 1);
+
 });
 
 test(function emitRegisteredEvent () : void {
@@ -46,6 +48,7 @@ test(function emitRegisteredEvent () : void {
   myEmitter.on('eventName', eventListener2);
   myEmitter.on('eventName', eventListener3);
   assertEquals(myEmitter.emit('eventName'), true);
+
 });
 
 test(function emitUnRegisteredEvent () : void {
@@ -55,6 +58,7 @@ test(function emitUnRegisteredEvent () : void {
   myEmitter.on('eventName', eventListener2);
   myEmitter.on('eventName', eventListener3);
   assertEquals(myEmitter.emit('eventNameNotRegistered'), false);
+
 });
 
 test(function emitWithCallbackParameters () : void {
@@ -62,6 +66,7 @@ test(function emitWithCallbackParameters () : void {
 
   myEmitter.on('eventName', StatusListener);
   assertEquals(myEmitter.emit('eventName', 200, 'OK'), true);
+
 });
 
 test(function emitOnce () : void {
@@ -73,9 +78,10 @@ test(function emitOnce () : void {
   myEmitter.once('eventNameOnce', eventListener4);
   myEmitter.emit('eventNameOnce');
   assertEquals(myEmitter.listenerCount('eventNameOnce'), 0);
+
 });
 
-test(function removeAllListenersFromSpecifiedEvent () : void {
+test(function removeAllListenersFromSpecificEvent () : void {
   const myEmitter = new EventEmitter();
 
   myEmitter.on('eventName1', eventListener1);
@@ -95,10 +101,15 @@ test(function removeAllListenersFromAllEvents () : void {
   myEmitter.on('eventName2', eventListener3);
   myEmitter.on('eventName2', eventListener4);
   myEmitter.removeAllListeners();
-  // const eventNamesofMyEmitter : String[] = myEmitter.eventNames()
-  // compare listener Function[] === []
-  assertEquals(myEmitter.listenerCount('eventName1'), 0);
-  assertEquals(myEmitter.listenerCount('eventName2'), 0);
+
+  const eventNames = myEmitter.eventNames();
+  let count = 0;
+    for (let i = 0; i < eventNames.length; i++) {
+      count += myEmitter.listenerCount(eventNames[i])
+    };
+
+  assertEquals(count, 0);
+
 });
 
 runTests();

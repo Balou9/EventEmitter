@@ -43,25 +43,22 @@ export class EventEmitter {
   listenerCount(eventName: string) : number {
     return this.listeners.get(eventName).length;
   };
-  // Type of keyIterator
-  eventNames() : String[] {
-    const eventList : String[] = []
-    const keyIterator = this.listeners.keys()
-    for (let value of keyIterator) {
+
+  eventNames() : string[] {
+    const eventList : string[] = []
+    for (let value of this.listeners.keys()) {
       eventList.push(value)
     }
-    return eventList
+    return eventList;
   };
 
   removeAllListeners(eventName?: string) : EventEmitter {
    if (eventName) {
      this.listeners.set(eventName, []);
    } else {
-     const eventList = this.eventNames();
-     for (let i = 0; i < eventList.length; i++) {
-       this.listeners.set(eventList[i].toString(), [])
-     };
+     const eventList : string[] = this.eventNames();
+     eventList.map((value: string) => { this.listeners.set(value, []) });
    }
-   return this
+   return this;
   };
 }
