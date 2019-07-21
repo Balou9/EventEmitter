@@ -1,5 +1,8 @@
 import { runTests, test } from "https://deno.land/std/testing/mod.ts";
-import { assertEquals, assertNotEquals } from "https://deno.land/std/testing/asserts.ts";
+import {
+  assertEquals,
+  assertNotEquals
+} from "https://deno.land/std/testing/asserts.ts";
 import { EventEmitter } from "./mod.ts";
 
 function eventListener1(): void {
@@ -54,7 +57,6 @@ test(function removeAllListenersFromSpecificEvent(): void {
 });
 
 test(function removeAllListenersFromAllEvents(): void {
-
   const myEmitter = new EventEmitter();
 
   myEmitter.on("eventName1", eventListener1);
@@ -70,11 +72,9 @@ test(function removeAllListenersFromAllEvents(): void {
   }
 
   assertEquals(count, 0);
-
 });
 
 test(function emitRegisteredEvent(): void {
-
   const myEmitter = new EventEmitter();
 
   myEmitter.on("eventName", eventListener1);
@@ -82,22 +82,17 @@ test(function emitRegisteredEvent(): void {
   myEmitter.on("eventName", eventListener3);
 
   assertEquals(myEmitter.emit("eventName"), true);
-
 });
 
-
 test(function emitWithCallbackParameters(): void {
-
   const myEmitter = new EventEmitter();
 
   myEmitter.on("eventName", StatusListener);
 
   assertEquals(myEmitter.emit("eventName", 200, "OK"), true);
-
 });
 
 test(function emitOnce(): void {
-
   const myEmitter = new EventEmitter();
 
   myEmitter.once("eventNameOnce", eventListener1);
@@ -107,12 +102,9 @@ test(function emitOnce(): void {
   myEmitter.emit("eventNameOnce");
 
   assertEquals(myEmitter.listenerCount("eventNameOnce"), 0);
-
 });
 
-
 test(function emitUnRegisteredEvent(): void {
-
   const myEmitter = new EventEmitter();
 
   myEmitter.on("eventName", eventListener1);
@@ -120,11 +112,9 @@ test(function emitUnRegisteredEvent(): void {
   myEmitter.on("eventName", eventListener3);
 
   assertEquals(myEmitter.emit("eventNameNotRegistered"), false);
-
 });
 
 test(function getListenersOfEventName(): void {
-
   const myEmitter = new EventEmitter();
 
   const eventListenersTrue: Function[] = [
@@ -135,10 +125,10 @@ test(function getListenersOfEventName(): void {
   ];
 
   const eventListenersFalse: Function[] = [
-    eventListener1,
+    eventListener4,
     eventListener3,
     eventListener2,
-    eventListener4
+    eventListener1
   ];
 
   myEmitter.on("eventName1", eventListener1);
@@ -148,7 +138,6 @@ test(function getListenersOfEventName(): void {
 
   assertEquals(myEmitter.listeners("eventName1"), eventListenersTrue);
   assertNotEquals(myEmitter.listeners("eventName1"), eventListenersFalse);
-
 });
 
 runTests();
