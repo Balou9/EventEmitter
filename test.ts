@@ -1,5 +1,6 @@
 import { runTests, test } from "https://deno.land/std/testing/mod.ts";
 import {
+//  assert,
   assertEquals,
   assertNotEquals
 } from "https://deno.land/std/testing/asserts.ts";
@@ -138,6 +139,17 @@ test(function getListenersOfEventName(): void {
 
   assertEquals(myEmitter.listeners("eventName1"), eventListenersTrue);
   assertNotEquals(myEmitter.listeners("eventName1"), eventListenersFalse);
+});
+
+test(function setMaxListeners(){
+  const myEmitter = new EventEmitter();
+  assertEquals(myEmitter.setMaxListeners(10), myEmitter);
+});
+
+test(function setAndGetMaxListenersShouldBeTrue(){
+  const myEmitter = new EventEmitter();
+  myEmitter.setMaxListeners(10);
+  assertEquals(myEmitter.getMaxListeners(), 10)
 });
 
 runTests();

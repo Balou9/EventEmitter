@@ -1,6 +1,6 @@
 export class EventEmitter {
-  _maxListeners: number = undefined;
-  _defaultListeners: number = 0;
+  private maxListeners: number = undefined;
+  private defaultListeners: number = 0;
   private defaultMaxListeners: number = 10;
   private eventListeners: Map<string, Function[]> = new Map<
     string,
@@ -8,15 +8,15 @@ export class EventEmitter {
   >();
 
   setMaxListeners(n: number): EventEmitter {
-    this._maxListeners = n;
+    this.maxListeners = n;
     return this;
   }
 
   _getMaxListeners(that: EventEmitter): number {
-    if (that._maxListeners === undefined) {
+    if (that.maxListeners === undefined) {
       return that.defaultMaxListeners;
     }
-    return that._maxListeners;
+    return that.maxListeners;
   }
 
   getMaxListeners(): number {
