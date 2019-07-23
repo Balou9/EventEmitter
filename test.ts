@@ -1,6 +1,6 @@
 import { runTests, test } from "https://deno.land/std/testing/mod.ts";
 import {
-//  assert,
+  //  assert,
   assertEquals,
   assertNotEquals
 } from "https://deno.land/std/testing/asserts.ts";
@@ -35,17 +35,23 @@ test(function registerListeners(): void {
   assertEquals(myEmitter.listenerCount("eventName"), 2);
 });
 
-test(function removeListener(): void {
+test(function removeListeners(): void {
   const myEmitter = new EventEmitter();
 
   myEmitter.on("eventName", eventListener1);
   myEmitter.on("eventName", eventListener2);
-  myEmitter.off("eventName", eventListener1);
+  myEmitter.on("eventName", eventListener3);
+  myEmitter.on("eventName", eventListener4);
+  myEmitter.off("eventName", eventListener2);
 
-  assertEquals(myEmitter.listenerCount("eventName"), 1);
+  assertEquals(myEmitter.listeners("eventName"), [
+    eventListener1,
+    eventListener3,
+    eventListener4
+  ]);
 });
 
-test(function removeAllListenersFromSpecificEvent(): void {
+test(function removeAllListenersFromSpecifiedEvent(): void {
   const myEmitter = new EventEmitter();
 
   myEmitter.on("eventName1", eventListener1);
@@ -141,15 +147,23 @@ test(function getListenersOfEventName(): void {
   assertNotEquals(myEmitter.listeners("eventName1"), eventListenersFalse);
 });
 
-test(function setMaxListeners(){
+test(function getDefaultMaxListeners() {
   const myEmitter = new EventEmitter();
-  assertEquals(myEmitter.setMaxListeners(10), myEmitter);
+  assertEquals(myEmitter.getMaxListeners(), 10)
 });
 
-test(function setAndGetMaxListenersShouldBeTrue(){
+test(function setMaxListeners() {
   const myEmitter = new EventEmitter();
-  myEmitter.setMaxListeners(10);
-  assertEquals(myEmitter.getMaxListeners(), 10)
+  assertEquals(myEmitter.setMaxListeners(5), myEmitter);
+});
+
+test(function getMaxListeners() {
+  const myEmitter = new EventEmitter();
+
+  const maxListenersBefore = myEmitter.getMaxListeners()
+  myEmitter.setMaxListeners(5);
+  assertEquals(myEmitter.getMaxListeners(), 5)
+  assertNotEquals(myEmitter.getMaxListeners(), maxListenersBefore)
 });
 
 runTests();

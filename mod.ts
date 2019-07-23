@@ -1,6 +1,5 @@
 export class EventEmitter {
   private maxListeners: number = undefined;
-  private defaultListeners: number = 0;
   private defaultMaxListeners: number = 10;
   private eventListeners: Map<string, Function[]> = new Map<
     string,
@@ -34,6 +33,10 @@ export class EventEmitter {
     }
     return eventList;
   }
+
+//  rawListeners(eventName: string) : Function[] {
+
+//  }
 
   listeners(eventName: string): Function[] {
     return this.eventListeners.get(eventName).slice(0);
