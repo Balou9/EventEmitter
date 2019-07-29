@@ -147,23 +147,34 @@ test(function getListenersOfEventName(): void {
   assertNotEquals(myEmitter.listeners("eventName1"), eventListenersFalse);
 });
 
-test(function getDefaultMaxListeners() {
+test(function getDefaultMaxListeners(): void {
   const myEmitter = new EventEmitter();
-  assertEquals(myEmitter.getMaxListeners(), 10)
+  assertEquals(myEmitter.getMaxListeners(), 10);
 });
 
-test(function setMaxListeners() {
+test(function setMaxListeners(): void {
   const myEmitter = new EventEmitter();
   assertEquals(myEmitter.setMaxListeners(5), myEmitter);
 });
 
-test(function getMaxListeners() {
+test(function getMaxListeners(): void {
   const myEmitter = new EventEmitter();
 
-  const maxListenersBefore = myEmitter.getMaxListeners()
+  const maxListenersBefore = myEmitter.getMaxListeners();
   myEmitter.setMaxListeners(5);
-  assertEquals(myEmitter.getMaxListeners(), 5)
-  assertNotEquals(myEmitter.getMaxListeners(), maxListenersBefore)
+  assertEquals(myEmitter.getMaxListeners(), 5);
+  assertNotEquals(myEmitter.getMaxListeners(), maxListenersBefore);
 });
+
+// test(function rawListeners() : void {
+//   const myEmitter = new EventEmitter();
+//   myEmitter.on("eventName1", eventListener1);
+//   myEmitter.once("eventName1", eventListener2);
+//   myEmitter.once("eventName1", eventListener3);
+//   myEmitter.on("eventName1", eventListener4);
+//
+//   assert(myEmitter.rawListeners('eventName1'))
+//
+// })
 
 runTests();
