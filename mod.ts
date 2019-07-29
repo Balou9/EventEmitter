@@ -3,7 +3,7 @@ interface State {
   wrapFn: undefined;
   target: EventEmitter;
   eventName: string;
-  fn: Function;
+  listener: Function;
 }
 
 export class EventEmitter {
@@ -50,23 +50,23 @@ export class EventEmitter {
     return this.eventListeners.get(eventName).slice(0);
   }
 
-  on(eventName: string, fn: Function): EventEmitter {
+  on(eventName: string, listener: Function): EventEmitter {
     if (!this.eventListeners.has(eventName)) {
       this.eventListeners.set(eventName, []);
     }
-    this.eventListeners.get(eventName).push(fn);
+    this.eventListeners.get(eventName).push(listener);
     return this;
   }
 
-  off(eventName: string, fn: Function): EventEmitter {
+  off(eventName: string, listener: Function): EventEmitter {
     if (this.eventListeners.has(eventName)) {
       const eventListeners: Function[] = this.eventListeners.get(eventName);
-      eventListeners.splice(eventListeners.indexOf(fn), 1);
+      eventListeners.splice(eventListeners.indexOf(listener), 1);
     }
     return this;
   }
 
-  _onceWrap(target: EventEmitter, eventName: string, fn: Function): Function {
+  _onceWrap(target: EventEmitter, eventName: string, listener: Function): Function {
     function onceWrapper(...args: any[]) {
       if (!this.fired) {
         this.target.off(this.eventName, this.wrapFn);
@@ -80,24 +80,25 @@ export class EventEmitter {
       wrapFn: undefined,
       target,
       eventName,
-      fn
+      listener
     };
+
     const wrapped = onceWrapper.bind(state);
-    wrapped.listener = fn;
+    wrapped.listener = listener;
     state.wrapFn = wrapped;
     return wrapped;
   }
 
-  once(eventName: string, fn: Function): EventEmitter {
+  once(eventName: string, listener: Function): EventEmitter {
     if (!this.eventListeners.has(eventName)) {
       this.eventListeners.set(eventName, []);
     }
     //const emitOnce = (...args: any[]) => {
-    //fn(...args);
-    //this.off(eventName, fn);
+    //listener(...args);
+    //this.off(eventName, listener);
     //};
 
-    this.on(eventName, this._onceWrap(this, eventName, fn));
+    this.on(eventName, this._onceWrap(this, eventName, listener));
     // this.eventListeners.get(eventName).push(emitOnce);
     return this;
   }
