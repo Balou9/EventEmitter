@@ -6,6 +6,14 @@ interface State {
   listener: Function;
 }
 
+// function unwrapListeners(arr: Function[]) : Function[] {
+//  var unwrappedListeners : Function[] = new Array(arr.length)
+//  for (let i = 0; i < arr.length; i++) {
+//  unwrappedListeners[i] = arr[i].["listener"] || arr[i]
+//  }
+//  return unwrappedListeners
+// }
+
 export class EventEmitter {
   private maxListeners: number = undefined;
   private defaultMaxListeners: number = 10;
@@ -42,12 +50,50 @@ export class EventEmitter {
     return eventList;
   }
 
-  //  rawListeners(eventName: string) : Function[] {
-  //
-  //  }
-
   listeners(eventName: string): Function[] {
     return this.eventListeners.get(eventName).slice(0);
+  }
+
+//  rawlisteners(eventName: string) : Function[] {
+//    const listeners : Function[] = this.eventListeners.get(eventName).slice(0);
+//    return unwrapListeners(listeners)
+//  }
+
+  _onceWrap(
+    target: EventEmitter,
+    eventName: string,
+    listener: Function
+  ): Function {
+    function onceWrapper(...args: any[]) {
+      if (!this.fired) {
+        this.target.off(this.eventName, this.wrapFn);
+        this.fired = true;
+        return Reflect.apply(this.listener, this.target, args);
+      }
+    }
+
+    const state: State = {
+      fired: false,
+      wrapFn: undefined,
+      target: target,
+      eventName: eventName,
+      listener: listener
+    };
+
+    const wrapped = onceWrapper.bind(state);
+    state.wrapFn = wrapped;
+    wrapped.listener = listener;
+    if (wrapped.listener) {
+      return wrapped
+    }
+  }
+
+  once(eventName: string, listener: Function): EventEmitter {
+    if (!this.eventListeners.has(eventName)) {
+      this.eventListeners.set(eventName, []);
+    }
+    this.on(eventName, this._onceWrap(this, eventName, listener));
+    return this;
   }
 
   on(eventName: string, listener: Function): EventEmitter {
@@ -63,43 +109,6 @@ export class EventEmitter {
       const eventListeners: Function[] = this.eventListeners.get(eventName);
       eventListeners.splice(eventListeners.indexOf(listener), 1);
     }
-    return this;
-  }
-
-  _onceWrap(target: EventEmitter, eventName: string, listener: Function): Function {
-    function onceWrapper(...args: any[]) {
-      if (!this.fired) {
-        this.target.off(this.eventName, this.wrapFn);
-        this.fired = true;
-        return Reflect.apply(this.listener, this.target, args);
-      }
-    }
-
-    const state: State = {
-      fired: false,
-      wrapFn: undefined,
-      target,
-      eventName,
-      listener
-    };
-
-    const wrapped = onceWrapper.bind(state);
-    wrapped.listener = listener;
-    state.wrapFn = wrapped;
-    return wrapped;
-  }
-
-  once(eventName: string, listener: Function): EventEmitter {
-    if (!this.eventListeners.has(eventName)) {
-      this.eventListeners.set(eventName, []);
-    }
-    //const emitOnce = (...args: any[]) => {
-    //listener(...args);
-    //this.off(eventName, listener);
-    //};
-
-    this.on(eventName, this._onceWrap(this, eventName, listener));
-    // this.eventListeners.get(eventName).push(emitOnce);
     return this;
   }
 

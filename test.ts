@@ -7,11 +7,11 @@ import {
 import { EventEmitter } from "./mod.ts";
 
 function eventListener1(): void {
-  console.log("An event occured!");
+  console.log("First event occured!");
 }
 
 function eventListener2(): void {
-  console.log("Another event occured!");
+  console.log("Second event occured!");
 }
 
 function eventListener3(): void {
@@ -99,6 +99,16 @@ test(function emitWithCallbackParameters(): void {
   assertEquals(myEmitter.emit("eventName", 200, "OK"), true);
 });
 
+test(function listenerAccessOnceWrapper(): void {
+  const myEmitter = new EventEmitter();
+  myEmitter.once("eventNameOnce", eventListener1);
+  const boundListenerToCheck : Function[] = myEmitter.listeners('eventNameOnce')
+  const unbound = boundListenerToCheck[0]["listener"]
+  console.log(unbound, eventListener1)
+  assertEquals([boundListenerToCheck[0]["listener"]], [eventListener1])
+
+})
+
 test(function emitOnce(): void {
   const myEmitter = new EventEmitter();
 
@@ -164,17 +174,6 @@ test(function getMaxListeners(): void {
   myEmitter.setMaxListeners(5);
   assertEquals(myEmitter.getMaxListeners(), 5);
   assertNotEquals(myEmitter.getMaxListeners(), maxListenersBefore);
-});
-
-// test(function rawListeners() : void {
-//   const myEmitter = new EventEmitter();
-//   myEmitter.on("eventName1", eventListener1);
-//   myEmitter.once("eventName1", eventListener2);
-//   myEmitter.once("eventName1", eventListener3);
-//   myEmitter.on("eventName1", eventListener4);
-//
-//   assert(myEmitter.rawListeners('eventName1'))
-//
-// })
+})
 
 runTests();
