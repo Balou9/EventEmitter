@@ -6,14 +6,6 @@ interface State {
   listener: Function;
 }
 
-// function unwrapListeners(arr: Function[]) : Function[] {
-//  var unwrappedListeners : Function[] = new Array(arr.length)
-//  for (let i = 0; i < arr.length; i++) {
-//  unwrappedListeners[i] = arr[i].["listener"] || arr[i]
-//  }
-//  return unwrappedListeners
-// }
-
 export class EventEmitter {
   private maxListeners: number = undefined;
   private defaultMaxListeners: number = 10;
@@ -22,16 +14,24 @@ export class EventEmitter {
     Function[]
   >();
 
+  private unwrapListeners(arr: Function[]): Function[] {
+    var unwrappedListeners: Function[] = new Array(arr.length);
+    for (let i = 0; i < arr.length; i++) {
+      unwrappedListeners[i] = arr[i]["listener"] || arr[i];
+    }
+    return unwrappedListeners;
+  }
+
   setMaxListeners(n: number): EventEmitter {
     this.maxListeners = n;
     return this;
   }
 
-  _getMaxListeners(that: EventEmitter): number {
-    if (that.maxListeners === undefined) {
-      return that.defaultMaxListeners;
+  _getMaxListeners(target: EventEmitter): number {
+    if (target.maxListeners === undefined) {
+      return target.defaultMaxListeners;
     }
-    return that.maxListeners;
+    return target.maxListeners;
   }
 
   getMaxListeners(): number {
@@ -50,14 +50,22 @@ export class EventEmitter {
     return eventList;
   }
 
+  _listeners(
+    target: EventEmitter,
+    eventName: string,
+    unwrap: boolean
+  ): Function[] {
+    if (!target.eventListeners.has(eventName)) {
+      return [];
+    }
+    const eventListeners: Function[] = target.eventListeners.get(eventName);
+
+    return unwrap ? this.unwrapListeners(eventListeners) : eventListeners.slice(0);
+  }
+
   listeners(eventName: string): Function[] {
     return this.eventListeners.get(eventName).slice(0);
   }
-
-//  rawlisteners(eventName: string) : Function[] {
-//    const listeners : Function[] = this.eventListeners.get(eventName).slice(0);
-//    return unwrapListeners(listeners)
-//  }
 
   _onceWrap(
     target: EventEmitter,
@@ -84,7 +92,7 @@ export class EventEmitter {
     state.wrapFn = wrapped;
     wrapped.listener = listener;
     if (wrapped.listener) {
-      return wrapped
+      return wrapped;
     }
   }
 
@@ -114,11 +122,11 @@ export class EventEmitter {
 
   removeAllListeners(eventName?: string): EventEmitter {
     if (eventName) {
-      this.eventListeners.set(eventName, []);
+      this.eventListeners.delete(eventName);
     } else {
       const eventList: string[] = this.eventNames();
       eventList.map((value: string) => {
-        this.eventListeners.set(value, []);
+        this.eventListeners.delete(value);
       });
     }
     return this;

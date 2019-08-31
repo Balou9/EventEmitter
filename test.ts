@@ -6,6 +6,10 @@ import {
 } from "https://deno.land/std/testing/asserts.ts";
 import { EventEmitter } from "./mod.ts";
 
+function hasListenerProp(cur: any): boolean {
+  return cur.hasOwnProperty("listener");
+}
+
 function eventListener1(): void {
   console.log("First event occured!");
 }
@@ -60,7 +64,7 @@ test(function removeAllListenersFromSpecifiedEvent(): void {
   myEmitter.on("eventName2", eventListener4);
   myEmitter.removeAllListeners("eventName1");
 
-  assertEquals(myEmitter.listenerCount("eventName1"), 0);
+  assertEquals(myEmitter.emit("eventName1"), false);
 });
 
 test(function removeAllListenersFromAllEvents(): void {
@@ -72,13 +76,7 @@ test(function removeAllListenersFromAllEvents(): void {
   myEmitter.on("eventName2", eventListener4);
   myEmitter.removeAllListeners();
 
-  const eventNames = myEmitter.eventNames();
-  let count = 0;
-  for (let i = 0; i < eventNames.length; i++) {
-    count += myEmitter.listenerCount(eventNames[i]);
-  }
-
-  assertEquals(count, 0);
+  assertEquals(myEmitter.eventNames(), []);
 });
 
 test(function emitRegisteredEvent(): void {
@@ -102,12 +100,13 @@ test(function emitWithCallbackParameters(): void {
 test(function listenerAccessOnceWrapper(): void {
   const myEmitter = new EventEmitter();
   myEmitter.once("eventNameOnce", eventListener1);
-  const boundListenerToCheck : Function[] = myEmitter.listeners('eventNameOnce')
-  const unbound = boundListenerToCheck[0]["listener"]
-  console.log(unbound, eventListener1)
-  assertEquals([boundListenerToCheck[0]["listener"]], [eventListener1])
+  myEmitter.once("eventNameOnce", eventListener2);
+  myEmitter.once("eventNameOnce", eventListener3);
+  myEmitter.once("eventNameOnce", eventListener4);
+  const listOfListeners: Function[] = myEmitter.listeners("eventNameOnce");
 
-})
+  assertEquals(listOfListeners.every(hasListenerProp), true);
+});
 
 test(function emitOnce(): void {
   const myEmitter = new EventEmitter();
@@ -174,6 +173,6 @@ test(function getMaxListeners(): void {
   myEmitter.setMaxListeners(5);
   assertEquals(myEmitter.getMaxListeners(), 5);
   assertNotEquals(myEmitter.getMaxListeners(), maxListenersBefore);
-})
+});
 
 runTests();

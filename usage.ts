@@ -19,9 +19,7 @@ function eventListener4(): void {
 
 myEmitter.on("eventName1", eventListener1);
 myEmitter.on("eventName1", eventListener2);
-myEmitter.once("eventName1", eventListener3);
-myEmitter.once("eventName1", eventListener4);
+myEmitter.removeAllListeners("eventName1");
 
-const list = myEmitter.listeners('eventName1')
-const somefn = list[2]
-console.log(somefn["listener"])
+console.log(myEmitter.emit("eventName1"))
+console.log(myEmitter.eventNames())
