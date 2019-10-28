@@ -60,7 +60,9 @@ export class EventEmitter {
     }
     const eventListeners: Function[] = target.eventListeners.get(eventName);
 
-    return unwrap ? this.unwrapListeners(eventListeners) : eventListeners.slice(0);
+    return unwrap
+      ? this.unwrapListeners(eventListeners)
+      : eventListeners.slice(0);
   }
 
   listeners(eventName: string): Function[] {

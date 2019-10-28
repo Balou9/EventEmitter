@@ -21,5 +21,5 @@ myEmitter.on("eventName1", eventListener1);
 myEmitter.on("eventName1", eventListener2);
 myEmitter.removeAllListeners("eventName1");
 
-console.log(myEmitter.emit("eventName1"))
-console.log(myEmitter.eventNames())
+console.log(myEmitter.emit("eventName1"));
+console.log(myEmitter.eventNames());
