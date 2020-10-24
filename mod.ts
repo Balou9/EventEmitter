@@ -17,6 +17,7 @@ export class EventEmitter {
   private unwrapListeners(arr: Function[]): Function[] {
     var unwrappedListeners: Function[] = new Array(arr.length);
     for (let i = 0; i < arr.length; i++) {
+      console.log(arr[i])
       unwrappedListeners[i] = arr[i]["listener"] || arr[i];
     }
     return unwrappedListeners;
