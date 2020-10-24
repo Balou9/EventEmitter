@@ -7,7 +7,7 @@ interface State {
 }
 
 export class EventEmitter {
-  private maxListeners: number = undefined;
+  private maxListeners: number | undefined;
   private defaultMaxListeners: number = 10;
   private eventListeners: Map<string, Function[]> = new Map<
     string,
