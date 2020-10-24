@@ -1,3 +1,7 @@
+interface ListenerFunction extends Function {
+  listener?: Function;
+}
+
 interface State {
   fired: boolean;
   wrapFn: undefined;
@@ -14,10 +18,10 @@ export class EventEmitter {
     Function[]
   >();
 
-  private unwrapListeners(arr: Function[]): Function[] {
+  private unwrapListeners(arr: ListenerFunction[]): Function[] {
     var unwrappedListeners: Function[] = new Array(arr.length) as Function[]
     for (let i = 0; i < arr.length; i++) {
-      unwrappedListeners[i] = arr[i];
+      unwrappedListeners[i] = arr[i]["listener"] || arr[i];
     }
     return unwrappedListeners;
   }
@@ -58,7 +62,7 @@ export class EventEmitter {
     if (!target.eventListeners.has(eventName)) {
       return [];
     }
-    const eventListeners: Function[] = target.eventListeners.get(eventName);
+    const eventListeners: ListenerFunction[] = target.eventListeners.get(eventName);
 
     return unwrap
       ? this.unwrapListeners(eventListeners)
@@ -74,7 +78,7 @@ export class EventEmitter {
     eventName: string,
     listener: Function
   ): Function {
-    function onceWrapper(...args: any[]) {
+    function onceWrapper(...args: any[]) : ListenerFunction {
       if (!this.fired) {
         this.target.off(this.eventName, this.wrapFn);
         this.fired = true;
