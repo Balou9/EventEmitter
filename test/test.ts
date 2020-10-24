@@ -1,4 +1,3 @@
-import { test, runIfMain } from "https://deno.land/std/testing/mod.ts";
 import {
   assertEquals,
   assertNotEquals
@@ -29,66 +28,19 @@ function StatusListener(code: number, msg: string): void {
   console.log(`Got ${code} and ${msg}`);
 }
 
-test({
+Deno.test({
   name: "Add listeners",
   fn(): void {
-    const myEmitter = new EventEmitter();
+  const myEmitter = new EventEmitter();
 
-    myEmitter.on("eventName", eventListener1);
-    myEmitter.on("eventName", eventListener2);
+  myEmitter.on("eventName", eventListener1);
+  myEmitter.on("eventName", eventListener2);
 
-    assertEquals(myEmitter.listenerCount("eventName"), 2);
+  assertEquals(myEmitter.listenerCount("eventName"), 2);
   }
 });
 
-test({
-  name: "Remove listeners",
-  fn(): void {
-    const myEmitter = new EventEmitter();
-
-    myEmitter.on("eventName", eventListener1);
-    myEmitter.on("eventName", eventListener2);
-    myEmitter.on("eventName", eventListener3);
-    myEmitter.on("eventName", eventListener4);
-    myEmitter.off("eventName", eventListener2);
-
-    assertEquals(myEmitter.listeners("eventName"), [
-      eventListener1,
-      eventListener3,
-      eventListener4
-    ]);
-  }
-});
-
-test({
-  name: "Remove all listeners from specified event",
-  fn(): void {
-    const myEmitter = new EventEmitter();
-
-    myEmitter.on("eventName1", eventListener1);
-    myEmitter.on("eventName1", eventListener2);
-    myEmitter.on("eventName2", eventListener3);
-    myEmitter.on("eventName2", eventListener4);
-    myEmitter.removeAllListeners("eventName1");
-    assertEquals(myEmitter.emit("eventName1"), false);
-  }
-});
-
-test({
-  name: "Remove all listeners from all events",
-  fn(): void {
-    const myEmitter = new EventEmitter();
-
-    myEmitter.on("eventName1", eventListener1);
-    myEmitter.on("eventName1", eventListener2);
-    myEmitter.on("eventName2", eventListener3);
-    myEmitter.on("eventName2", eventListener4);
-    myEmitter.removeAllListeners();
-    assertEquals(myEmitter.eventNames(), []);
-  }
-});
-
-test({
+Deno.test({
   name: "Emit listeners of registered event",
   fn(): void {
     const myEmitter = new EventEmitter();
@@ -100,7 +52,7 @@ test({
   }
 });
 
-test({
+Deno.test({
   name: "Emit with callback",
   fn(): void {
     const myEmitter = new EventEmitter();
@@ -110,22 +62,7 @@ test({
   }
 });
 
-test({
-  name: "Listener access on once wrapper",
-  fn(): void {
-    const myEmitter = new EventEmitter();
-
-    myEmitter.once("eventNameOnce", eventListener1);
-    myEmitter.once("eventNameOnce", eventListener2);
-    myEmitter.once("eventNameOnce", eventListener3);
-    myEmitter.once("eventNameOnce", eventListener4);
-    const listOfListeners: Function[] = myEmitter.listeners("eventNameOnce");
-
-    assertEquals(listOfListeners.every(hasListenerProp), true);
-  }
-});
-
-test({
+Deno.test({
   name: "Emit listener once",
   fn(): void {
     const myEmitter = new EventEmitter();
@@ -135,12 +72,11 @@ test({
     myEmitter.once("eventNameOnce", eventListener3);
     myEmitter.once("eventNameOnce", eventListener4);
     myEmitter.emit("eventNameOnce");
-
     assertEquals(myEmitter.listenerCount("eventNameOnce"), 0);
   }
 });
 
-test({
+Deno.test({
   name: "Emit unregistered event",
   fn(): void {
     const myEmitter = new EventEmitter();
@@ -153,7 +89,7 @@ test({
   }
 });
 
-test({
+Deno.test({
   name: "Get all listeners from eventname specified",
   fn(): void {
     const myEmitter = new EventEmitter();
@@ -182,7 +118,7 @@ test({
   }
 });
 
-test({
+Deno.test({
   name: "Get default maximal listeners per event",
   fn(): void {
     const myEmitter = new EventEmitter();
@@ -190,8 +126,7 @@ test({
   }
 });
 
-
-test({
+Deno.test({
   name: "Set maxListeners value",
   fn(): void {
     const myEmitter = new EventEmitter();
@@ -199,7 +134,7 @@ test({
   }
 });
 
-test({
+Deno.test({
   name: "Get maxListeners value",
   fn(): void {
     const myEmitter = new EventEmitter();
@@ -211,4 +146,89 @@ test({
   }
 });
 
-runIfMain(import.meta, { parallel: true });
+Deno.test({
+  name: "Add listeners",
+  fn(): void {
+    const myEmitter = new EventEmitter();
+
+    myEmitter.on("eventName", eventListener1);
+    myEmitter.on("eventName", eventListener2);
+
+    assertEquals(myEmitter.listenerCount("eventName"), 2);
+  }
+});
+
+Deno.test({
+  name: "Remove specific listener",
+  fn(): void {
+    const myEmitter = new EventEmitter();
+
+    myEmitter.on("eventName", eventListener1);
+    myEmitter.on("eventName", eventListener2);
+    myEmitter.on("eventName", eventListener3);
+    myEmitter.on("eventName", eventListener4);
+    myEmitter.off("eventName", eventListener2);
+
+    assertEquals(myEmitter.listeners("eventName"), [
+      eventListener1,
+      eventListener3,
+      eventListener4
+    ]);
+  }
+});
+
+Deno.test({
+  name: "Remove all listeners from specified event including once listeners",
+  fn(): void {
+    const myEmitter = new EventEmitter();
+
+    myEmitter.on("eventName1", eventListener1);
+    myEmitter.once("eventName1", eventListener2);
+    myEmitter.on("eventName2", eventListener3);
+    myEmitter.once("eventName2", eventListener4);
+    myEmitter.removeAllListeners("eventName1");
+    assertEquals(myEmitter.emit("eventName1"), false);
+    assertEquals(myEmitter.emit("eventName2"), true);
+  }
+});
+
+Deno.test({
+  name: "Remove specific once listener",
+  fn(): void {
+    const myEmitter = new EventEmitter();
+
+    myEmitter.once("eventName", eventListener1);
+    myEmitter.once("eventName", eventListener2);
+    myEmitter.off("eventName", eventListener1);
+    assertEquals(myEmitter.listeners("eventName"), [eventListener2]);
+  }
+});
+
+Deno.test({
+  name: "Remove all listeners from all events including once listeners",
+  fn(): void {
+    const myEmitter = new EventEmitter();
+
+    myEmitter.on("eventName1", eventListener1);
+    myEmitter.once("eventName1", eventListener2);
+    myEmitter.on("eventName2", eventListener3);
+    myEmitter.once("eventName2", eventListener4);
+    myEmitter.removeAllListeners();
+    assertEquals(myEmitter.eventNames(), []);
+  }
+});
+
+Deno.test({
+  name: "Remove all listeners including once listeners from specified event",
+  fn(): void {
+    const myEmitter = new EventEmitter();
+
+    myEmitter.on("eventName1", eventListener1);
+    myEmitter.on("eventName1", eventListener2);
+    myEmitter.once("eventName1", eventListener3);
+    myEmitter.once("eventName1", eventListener4);
+    myEmitter.removeAllListeners("eventName1");
+    assertEquals(myEmitter.emit("eventName1"), false);
+    assertEquals(myEmitter.listeners("eventName1"), []);
+  }
+})
